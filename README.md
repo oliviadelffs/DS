@@ -18,6 +18,7 @@ This repository includes the projects I have completed as a data science student
 > * Analyzes Instagram's top 200 most followed accounts to compare the Kardashian family to other influencers
 > * Performs sentiment analysis on various subreddits to explore how Kardashians are discussed compared to other influencers
 > * [Quarto Document featuring data-collection process](https://github.com/oliviadelffs/DS/blob/main/Kylie%20Cosmetics%20Scraping.R)
+> * [Quarto Document featuring analysis](https://github.com/oliviadelffs/DS/blob/main/Final%20Project.qmd)
 * Wish.com ratings
 > * Explores reviews of clothing items sold on Wish 
 * Hill Ciphers
