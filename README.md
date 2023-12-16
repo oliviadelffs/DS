@@ -7,8 +7,8 @@ This repository includes the projects I have completed as a data science student
 > * Analyzing data to provide insights of 2023 Cincinnati City Council Election
 * Big East Regression
 > * Regression model that shows which basketball stats are most important to determining team rank
-> * Methodology found in "Big East Regression Paper.pdf"
-> * Code found in "Big East Regression.Rmd"
+> * [Methodology](https://github.com/oliviadelffs/DS/blob/main/Big%20East%20Regression%20Paper.pdf)
+> * [R Markdown Document featuring analysis](https://github.com/oliviadelffs/DS/blob/main/Big%20East%20Regression%20Paper.pdf)
 * Kylie Cosmetics Lip Products
 > * Web scraping Ulta's website to gauge how popular Kylie Cosmetics is
 > * [Quarto Document featuring analysis](https://github.com/oliviadelffs/DS/blob/main/Kylie%20Cosmetics.qmd)
