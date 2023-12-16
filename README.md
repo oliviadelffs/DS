@@ -3,6 +3,9 @@ This repository includes the projects I have completed as a data science student
 # Projects
 * Summer XU Retention Project
 > * Analyzing data regarding Xavier University's students to provide insight into Xavier's retention
+> * [Data Wrangling](https://github.com/oliviadelffs/DS/blob/main/Summer%20Data%20Wrangling.R)
+> * [Final Results](https://github.com/oliviadelffs/DS/blob/main/Final%20Results%20Summer.Rmd)
+> * Code will not work as data set can not be uploaded because it contains private information
 * City Council Elections
 > * Analyzing data to provide insights of 2023 Cincinnati City Council Election
 > * [Files needed for analysis](https://github.com/oliviadelffs/DS/blob/main/Files%20for%20City%20Council.zip)
