@@ -21,6 +21,8 @@ This repository includes the projects I have completed as a data science student
 > * [Quarto Document featuring analysis](https://github.com/oliviadelffs/DS/blob/main/Final%20Project.qmd)
 > * [HTML Document featuring analysis](https://rpubs.com/delffso/1130928)
 * Wish.com ratings
-> * Explores reviews of clothing items sold on Wish 
+> * Explores reviews of clothing items sold on Wish
+> * [R Script featuring analysis](https://github.com/oliviadelffs/DS/blob/main/Assignment%203.R)
+> * [HTML Document featuring analysis](https://rpubs.com/delffso/wish-ratings)
 * Hill Ciphers
 > * Uses linear algebra to strengthen the encryption process of secret messages
