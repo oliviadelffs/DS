@@ -1,0 +1,506 @@
+---
+title: "Project"
+output: html_document
+date: "2023-02-23"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readr)
+```
+
+```{R}
+mydata <- read_csv("https://myxavier-my.sharepoint.com/:x:/g/personal/delffso_xavier_edu/EdueLi6kpuRFpUaKpHLncncB5BugRxCX22IHO9T1MqIvUg?download=1")
+newBigEast <- mydata %>% filter(2012 < year)
+split <- mydata %>% filter(year < 2013)
+footballBigEast <- split %>% filter(2004 < year)
+secondSplit <- mydata %>% filter(1979 < year)
+oldBigEast <- secondSplit %>% filter(year < 2005)
+```
+
+<!-- Starting rank of old Big East-->
+
+```{r}
+oldRankFull <- lm(oldBigEast$rank ~ oldBigEast$games + oldBigEast$wins + oldBigEast$losses + oldBigEast$win_percentage + oldBigEast$conference_wins + oldBigEast$conference_losses + oldBigEast$home_wins + oldBigEast$home_losses + oldBigEast$away_wins + oldBigEast$away_losses +oldBigEast$offensive_rating + oldBigEast$defensive_rating + oldBigEast$net_rating + oldBigEast$field_goals + oldBigEast$field_goal_attempts + oldBigEast$field_goal_percentage + oldBigEast$X3_pointers + oldBigEast$X3_pointer_attempts + oldBigEast$X3_pointer_percentage + oldBigEast$free_throws + oldBigEast$free_throw_attempts + oldBigEast$free_throw_percentage + oldBigEast$offensive_rebounds + oldBigEast$total_rebounds + oldBigEast$assists + oldBigEast$steals + oldBigEast$blocks + oldBigEast$turnovers + oldBigEast$personal_fouls + oldBigEast$points + oldBigEast$opponent_points + oldBigEast$simple_rating)
+```
+
+```{r}
+summary(oldRankFull)
+```
+
+<!-- Remove all variables with no data-->
+
+```{r}
+
+oldRank2 <- lm(oldBigEast$rank ~ oldBigEast$games + oldBigEast$wins + oldBigEast$losses + oldBigEast$win_percentage + oldBigEast$conference_wins + oldBigEast$conference_losses + oldBigEast$field_goals + oldBigEast$field_goal_attempts + oldBigEast$field_goal_percentage + oldBigEast$free_throws + oldBigEast$free_throw_attempts + oldBigEast$total_rebounds + oldBigEast$assists + oldBigEast$steals + oldBigEast$blocks + oldBigEast$turnovers + oldBigEast$personal_fouls + oldBigEast$points + oldBigEast$opponent_points + oldBigEast$simple_rating)
+summary(oldRank2)
+```
+
+<!-- Remove losses because NA -->
+
+```{r}
+oldRank3 <- lm(oldBigEast$rank ~ oldBigEast$games + oldBigEast$wins + oldBigEast$win_percentage + oldBigEast$conference_wins + oldBigEast$conference_losses + oldBigEast$field_goals + oldBigEast$field_goal_attempts + oldBigEast$field_goal_percentage + oldBigEast$free_throws + oldBigEast$free_throw_attempts + oldBigEast$total_rebounds + oldBigEast$assists + oldBigEast$steals + oldBigEast$blocks + oldBigEast$turnovers + oldBigEast$personal_fouls + oldBigEast$points + oldBigEast$opponent_points + oldBigEast$simple_rating)
+summary(oldRank3)
+```
+
+<!-- Remove field goals because highest p-value (0.9904) -->
+
+```{r}
+oldRank4 <- lm(oldBigEast$rank ~ oldBigEast$games + oldBigEast$wins + oldBigEast$win_percentage + oldBigEast$conference_wins + oldBigEast$conference_losses + oldBigEast$field_goal_attempts + oldBigEast$field_goal_percentage + oldBigEast$free_throws + oldBigEast$free_throw_attempts + oldBigEast$total_rebounds + oldBigEast$assists + oldBigEast$steals + oldBigEast$blocks + oldBigEast$turnovers + oldBigEast$personal_fouls + oldBigEast$points + oldBigEast$opponent_points + oldBigEast$simple_rating)
+summary(oldRank4)
+```
+
+<!-- Remove assists because highest p-value (0.97478) -->
+
+```{r}
+oldRank5 <- lm(oldBigEast$rank ~ oldBigEast$games + oldBigEast$wins + oldBigEast$win_percentage + oldBigEast$conference_wins + oldBigEast$conference_losses + oldBigEast$field_goal_attempts + oldBigEast$field_goal_percentage + oldBigEast$free_throws + oldBigEast$free_throw_attempts + oldBigEast$total_rebounds + oldBigEast$steals + oldBigEast$blocks + oldBigEast$turnovers + oldBigEast$personal_fouls + oldBigEast$points + oldBigEast$opponent_points + oldBigEast$simple_rating)
+summary(oldRank5)
+```
+
+<!-- Remove wins because highest p-value (0.93491) -->
+
+```{r}
+oldRank6 <- lm(oldBigEast$rank ~ oldBigEast$games + oldBigEast$win_percentage + oldBigEast$conference_wins + oldBigEast$conference_losses + oldBigEast$field_goal_attempts + oldBigEast$field_goal_percentage + oldBigEast$free_throws + oldBigEast$free_throw_attempts + oldBigEast$total_rebounds + oldBigEast$steals + oldBigEast$blocks + oldBigEast$turnovers + oldBigEast$personal_fouls + oldBigEast$points + oldBigEast$opponent_points + oldBigEast$simple_rating)
+summary(oldRank6)
+```
+
+<!-- Remove simple rating because highest p-value (0.91129)-->
+
+```{r}
+oldRank7 <- lm(oldBigEast$rank ~ oldBigEast$games + oldBigEast$win_percentage + oldBigEast$conference_wins + oldBigEast$conference_losses + oldBigEast$field_goal_attempts + oldBigEast$field_goal_percentage + oldBigEast$free_throws + oldBigEast$free_throw_attempts + oldBigEast$total_rebounds + oldBigEast$steals + oldBigEast$blocks + oldBigEast$turnovers + oldBigEast$personal_fouls + oldBigEast$points + oldBigEast$opponent_points)
+summary(oldRank7)
+```
+
+<!-- Remove free throw attempts because highest p-value (0.836415)-->
+
+```{r}
+oldRank8 <- lm(oldBigEast$rank ~ oldBigEast$games + oldBigEast$win_percentage + oldBigEast$conference_wins + oldBigEast$conference_losses + oldBigEast$field_goal_attempts + oldBigEast$field_goal_percentage + oldBigEast$free_throws + oldBigEast$total_rebounds + oldBigEast$steals + oldBigEast$blocks + oldBigEast$turnovers + oldBigEast$personal_fouls + oldBigEast$points + oldBigEast$opponent_points)
+summary(oldRank8)
+```
+
+<!-- Remove turnovers because highest p-value (0.708765)-->
+
+```{r}
+oldRank9 <- lm(oldBigEast$rank ~ oldBigEast$games + oldBigEast$win_percentage + oldBigEast$conference_wins + oldBigEast$conference_losses + oldBigEast$field_goal_attempts + oldBigEast$field_goal_percentage + oldBigEast$free_throws + oldBigEast$total_rebounds + oldBigEast$steals + oldBigEast$blocks + oldBigEast$personal_fouls + oldBigEast$points + oldBigEast$opponent_points)
+summary(oldRank9)
+```
+
+<!-- Remove opponent points because highest p-value (0.56227 )-->
+
+```{r}
+oldRank10 <- lm(oldBigEast$rank ~ oldBigEast$games + oldBigEast$win_percentage + oldBigEast$conference_wins + oldBigEast$conference_losses + oldBigEast$field_goal_attempts + oldBigEast$field_goal_percentage + oldBigEast$free_throws + oldBigEast$total_rebounds + oldBigEast$steals + oldBigEast$blocks +  oldBigEast$personal_fouls + oldBigEast$points)
+summary(oldRank10)
+```
+
+<!-- Remove games because highest p-value (0.5287 )-->
+
+```{r}
+oldRank11 <- lm(oldBigEast$rank ~ oldBigEast$win_percentage + oldBigEast$conference_wins + oldBigEast$conference_losses + oldBigEast$field_goal_attempts + oldBigEast$field_goal_percentage + oldBigEast$free_throws + oldBigEast$total_rebounds + oldBigEast$steals + oldBigEast$blocks +  oldBigEast$personal_fouls + oldBigEast$points)
+summary(oldRank11)
+```
+
+<!-- Remove steals because highest p-value (0.3444)-->
+
+```{r}
+oldRank12 <- lm(oldBigEast$rank ~ oldBigEast$win_percentage + oldBigEast$conference_wins + oldBigEast$conference_losses + oldBigEast$field_goal_attempts + oldBigEast$field_goal_percentage + oldBigEast$free_throws + oldBigEast$total_rebounds + oldBigEast$blocks +  oldBigEast$personal_fouls + oldBigEast$points)
+summary(oldRank12)
+```
+
+<!-- Remove blocks because highest p-value (0.3243)-->
+
+```{r}
+oldRank13 <- lm(oldBigEast$rank ~ oldBigEast$win_percentage + oldBigEast$conference_wins + oldBigEast$conference_losses + oldBigEast$field_goal_attempts + oldBigEast$field_goal_percentage + oldBigEast$free_throws + oldBigEast$total_rebounds +  oldBigEast$personal_fouls + oldBigEast$points)
+summary(oldRank13)
+```
+
+<!-- Remove blocks because highest p-value (0.3243)-->
+
+```{r}
+oldRank14 <- lm(oldBigEast$rank ~ oldBigEast$win_percentage + oldBigEast$conference_wins + oldBigEast$conference_losses + oldBigEast$field_goal_attempts + oldBigEast$field_goal_percentage + oldBigEast$free_throws + oldBigEast$total_rebounds +  oldBigEast$personal_fouls + oldBigEast$points)
+summary(oldRank14)
+```
+
+<!-- Remove personal fouls because highest p-value (0.1746)-->
+
+```{r}
+oldRank15 <- lm(oldBigEast$rank ~ oldBigEast$win_percentage + oldBigEast$conference_wins + oldBigEast$conference_losses + oldBigEast$field_goal_attempts + oldBigEast$field_goal_percentage + oldBigEast$free_throws + oldBigEast$total_rebounds + oldBigEast$points)
+summary(oldRank15)
+```
+
+<!-- Remove win percentage because highest p-value (0.07567)-->
+
+```{r}
+oldRankModel <- lm(oldBigEast$rank ~  oldBigEast$conference_wins + oldBigEast$conference_losses + oldBigEast$field_goal_attempts + oldBigEast$field_goal_percentage + oldBigEast$free_throws + oldBigEast$total_rebounds + oldBigEast$points)
+summary(oldRank16)
+```
+
+<!-- Starting rank of Football Big East-->
+
+```{r}
+FBRankFull <- lm(footballBigEast$rank ~ footballBigEast$games + footballBigEast$wins + footballBigEast$losses + footballBigEast$win_percentage + footballBigEast$conference_wins + footballBigEast$conference_losses + footballBigEast$home_wins + footballBigEast$home_losses + footballBigEast$away_wins + footballBigEast$away_losses +footballBigEast$offensive_rating + footballBigEast$defensive_rating + footballBigEast$net_rating + footballBigEast$field_goals + footballBigEast$field_goal_attempts + footballBigEast$field_goal_percentage + footballBigEast$X3_pointers + footballBigEast$X3_pointer_attempts + footballBigEast$X3_pointer_percentage + footballBigEast$free_throws + footballBigEast$free_throw_attempts + footballBigEast$free_throw_percentage + footballBigEast$offensive_rebounds + footballBigEast$total_rebounds + footballBigEast$assists + footballBigEast$steals + footballBigEast$blocks + footballBigEast$turnovers + footballBigEast$personal_fouls + footballBigEast$points + footballBigEast$opponent_points + footballBigEast$simple_rating)
+summary(FBRankFull)
+```
+
+<!-- Remove NA-->
+
+<!-- Remove highest p value (0.8551), defensive rating-->
+
+<!-- Remove highest p value (0.8137), steals-->
+
+<!-- Remove highest p value (0.8197), win percentage-->
+
+<!-- Remove highest p value (0.6256), games-->
+
+<!-- Remove highest p value (0.6828), home losses-->
+
+<!-- Remove highest p value (0.7009), assists-->
+
+<!-- Remove highest p value (0.66729), net rating-->
+
+<!-- Remove highest p value (0.65970), 3 pointers-->
+
+<!-- Remove highest p value (0.51338), turnovers-->
+
+<!-- Remove highest p value (0.58891), home wins-->
+
+<!-- Remove highest p value (0.44570), offensive rebounds-->
+
+<!-- Remove highest p value (0.6517), offensive rating-->
+
+<!-- Remove highest p value (0.9267), free throw attempts-->
+
+<!-- Remove highest p value (0.9350), blocks-->
+
+<!-- Remove highest p value (0.8449), free throw percentage-->
+
+<!-- Remove highest p value (0.8707), total rebounds-->
+
+<!-- Remove highest p value (0.5970), wins-->
+
+<!-- Remove highest p value (0.4538), personal fouls-->
+
+<!-- Remove highest p value (0.4082), field goals-->
+
+<!-- Remove highest p value (0.1474), opponent points-->
+
+<!-- Remove highest p value (0.4197), simple rating-->
+
+<!-- Remove highest p value (0.2013), field goal attempts-->
+
+<!-- Remove highest p value (0.2013), free throws-->
+
+<!-- Remove highest p value (0.23908), 3 pointer percentage-->
+
+```{r}
+FBRank <- lm(footballBigEast$rank ~  footballBigEast$conference_wins + footballBigEast$away_losses + footballBigEast$field_goal_percentage  + footballBigEast$X3_pointer_attempts + footballBigEast$points)
+summary(FBRank)
+```
+
+<!-- Remove NA-->
+
+<!-- Remove highest p value (0.963), field goal attempts-->
+
+<!-- Remove highest p value (0.9399), away losses -->
+
+<!-- Remove highest p value (0.9099), simple rating -->
+
+<!-- Remove highest p value (0.9128), 3 pointers -->
+
+<!-- Remove highest p value (0.7800), home losses -->
+
+<!-- Remove highest p value (0.6910), conference losses -->
+
+<!-- Remove highest p value (0.7089), free throws -->
+
+<!-- Remove highest p value (0.70569), blocks -->
+
+<!-- Remove highest p value (0.43636), away wins -->
+
+<!-- Remove highest p value (0.51376), assists -->
+
+<!-- Remove highest p value (0.55548), personal fouls -->
+
+<!-- Remove highest p value opponent points -->
+
+<!-- Remove highest p value net rating -->
+
+<!-- Remove highest p value defensive rating -->
+
+<!-- Remove highest p value total rebounds -->
+
+<!-- Remove highest p value field goals -->
+
+<!-- Remove highest p value 3 pointer percentage -->
+
+<!-- Remove highest p value games -->
+
+<!-- Remove highest p value win percentage -->
+
+<!-- Remove highest p value steals -->
+
+<!-- Remove highest p value home wins -->
+
+```{r}
+newModel <- lm(newBigEast$rank ~ newBigEast$conference_wins +  newBigEast$field_goal_percentage + newBigEast$X3_pointer_attempts  + newBigEast$free_throw_attempts + newBigEast$offensive_rating + newBigEast$free_throw_percentage + newBigEast$offensive_rebounds + newBigEast$turnovers + newBigEast$points )
+summary(newModel)
+```
+
+```{r}
+fullModel <- lm(mydata$rank ~ mydata$games + mydata$wins + mydata$losses + mydata$win_percentage + mydata$conference_wins + mydata$conference_losses + mydata$home_wins + mydata$home_losses + mydata$away_wins + mydata$away_losses + mydata$offensive_rating + mydata$defensive_rating + mydata$net_rating + mydata$field_goals + mydata$field_goal_attempts + mydata$field_goal_percentage + mydata$X3_pointers + mydata$X3_pointer_attempts + mydata$X3_pointer_percentage + mydata$free_throws + mydata$free_throw_attempts + mydata$free_throw_percentage + mydata$offensive_rebounds + mydata$total_rebounds + mydata$assists + mydata$steals + mydata$blocks + mydata$turnovers + mydata$personal_fouls + mydata$points + mydata$opponent_points + mydata$simple_rating)
+```
+
+\<!-remove home_losses-\>
+
+```{r}
+modelTwo <- lm(mydata$rank ~ mydata$games + mydata$wins + mydata$losses + mydata$win_percentage + mydata$conference_wins + mydata$conference_losses + mydata$home_wins + mydata$away_wins + mydata$away_losses + mydata$offensive_rating + mydata$defensive_rating + mydata$net_rating + mydata$field_goals + mydata$field_goal_attempts + mydata$field_goal_percentage + mydata$X3_pointers + mydata$X3_pointer_attempts + mydata$X3_pointer_percentage + mydata$free_throws + mydata$free_throw_attempts + mydata$free_throw_percentage + mydata$offensive_rebounds + mydata$total_rebounds + mydata$assists + mydata$steals + mydata$blocks + mydata$turnovers + mydata$personal_fouls + mydata$points + mydata$opponent_points + mydata$simple_rating)
+```
+
+\<!-remove win_percentage-\>
+
+```{r}
+modelThree <- lm(mydata$rank ~ mydata$games + mydata$wins + mydata$losses + mydata$conference_wins + mydata$conference_losses + mydata$home_wins + mydata$away_wins + mydata$away_losses + mydata$offensive_rating + mydata$defensive_rating + mydata$net_rating + mydata$field_goals + mydata$field_goal_attempts + mydata$field_goal_percentage + mydata$X3_pointers + mydata$X3_pointer_attempts + mydata$X3_pointer_percentage + mydata$free_throws + mydata$free_throw_attempts + mydata$free_throw_percentage + mydata$offensive_rebounds + mydata$total_rebounds + mydata$assists + mydata$steals + mydata$blocks + mydata$turnovers + mydata$personal_fouls + mydata$points + mydata$opponent_points + mydata$simple_rating)
+```
+
+\<!-remove simple_rating-\>
+
+```{r}
+modelFour <- lm(mydata$rank ~ mydata$games + mydata$wins + mydata$losses + mydata$conference_wins + mydata$conference_losses + mydata$home_wins + mydata$away_wins + mydata$away_losses + mydata$offensive_rating + mydata$defensive_rating + mydata$net_rating + mydata$field_goals + mydata$field_goal_attempts + mydata$field_goal_percentage + mydata$X3_pointers + mydata$X3_pointer_attempts + mydata$X3_pointer_percentage + mydata$free_throws + mydata$free_throw_attempts + mydata$free_throw_percentage + mydata$offensive_rebounds + mydata$total_rebounds + mydata$assists + mydata$steals + mydata$blocks + mydata$turnovers + mydata$personal_fouls + mydata$points + mydata$opponent_points)
+```
+
+\<!-remove free throw attempts-\>
+
+```{r}
+modelFive <- lm(mydata$rank ~ mydata$games + mydata$wins + mydata$losses + mydata$conference_wins + mydata$conference_losses + mydata$home_wins + mydata$away_wins + mydata$away_losses + mydata$offensive_rating + mydata$defensive_rating + mydata$net_rating + mydata$field_goals + mydata$field_goal_attempts + mydata$field_goal_percentage + mydata$X3_pointers + mydata$X3_pointer_attempts + mydata$X3_pointer_percentage + mydata$free_throws + mydata$free_throw_percentage + mydata$offensive_rebounds + mydata$total_rebounds + mydata$assists + mydata$steals + mydata$blocks + mydata$turnovers + mydata$personal_fouls + mydata$points + mydata$opponent_points)
+```
+
+```{r}
+summary(modelFive)
+```
+
+\<!-remove losses-\>
+
+```{r}
+modelSix <- lm(mydata$rank ~ mydata$games + mydata$wins + mydata$conference_wins + mydata$conference_losses + mydata$home_wins + mydata$away_wins + mydata$away_losses + mydata$offensive_rating + mydata$defensive_rating + mydata$net_rating + mydata$field_goals + mydata$field_goal_attempts + mydata$field_goal_percentage + mydata$X3_pointers + mydata$X3_pointer_attempts + mydata$X3_pointer_percentage + mydata$free_throws + mydata$free_throw_percentage + mydata$offensive_rebounds + mydata$total_rebounds + mydata$assists + mydata$steals + mydata$blocks + mydata$turnovers + mydata$personal_fouls + mydata$points + mydata$opponent_points)
+```
+
+```{r}
+summary(modelSix)
+```
+
+\<!-remove field_goal_attempts-\>
+
+```{r}
+modelSeven <- lm(mydata$rank ~ mydata$games + mydata$wins + mydata$conference_wins + mydata$conference_losses + mydata$home_wins + mydata$away_wins + mydata$away_losses + mydata$offensive_rating + mydata$defensive_rating + mydata$net_rating + mydata$field_goals + mydata$field_goal_percentage + mydata$X3_pointers + mydata$X3_pointer_attempts + mydata$X3_pointer_percentage + mydata$free_throws + mydata$free_throw_percentage + mydata$offensive_rebounds + mydata$total_rebounds + mydata$assists + mydata$steals + mydata$blocks + mydata$turnovers + mydata$personal_fouls + mydata$points + mydata$opponent_points)
+```
+
+```{r}
+summary(modelSeven)
+```
+
+\<!-remove opponent_points-\>
+
+```{r}
+modelEight <- lm(mydata$rank ~ mydata$games + mydata$wins + mydata$conference_wins + mydata$conference_losses + mydata$home_wins + mydata$away_wins + mydata$away_losses + mydata$offensive_rating + mydata$defensive_rating + mydata$net_rating + mydata$field_goals + mydata$field_goal_percentage + mydata$X3_pointers + mydata$X3_pointer_attempts + mydata$X3_pointer_percentage + mydata$free_throws + mydata$free_throw_percentage + mydata$offensive_rebounds + mydata$total_rebounds + mydata$assists + mydata$steals + mydata$blocks + mydata$turnovers + mydata$personal_fouls + mydata$points)
+```
+
+```{r}
+summary(modelEight)
+```
+
+\<!-remove 3 pointers-\>
+
+```{r}
+modelNine <- lm(mydata$rank ~ mydata$games + mydata$wins + mydata$conference_wins + mydata$conference_losses + mydata$home_wins + mydata$away_wins + mydata$away_losses + mydata$offensive_rating + mydata$defensive_rating + mydata$net_rating + mydata$field_goals + mydata$field_goal_percentage + mydata$X3_pointer_attempts + mydata$X3_pointer_percentage + mydata$free_throws + mydata$free_throw_percentage + mydata$offensive_rebounds + mydata$total_rebounds + mydata$assists + mydata$steals + mydata$blocks + mydata$turnovers + mydata$personal_fouls + mydata$points)
+```
+
+```{r}
+summary(modelNine)
+```
+
+\<!-remove offensive rating-\>
+
+```{r}
+modelTen <- lm(mydata$rank ~ mydata$games + mydata$wins + mydata$conference_wins + mydata$conference_losses + mydata$home_wins + mydata$away_wins + mydata$away_losses + mydata$defensive_rating + mydata$net_rating + mydata$field_goals + mydata$field_goal_percentage + mydata$X3_pointer_attempts + mydata$X3_pointer_percentage + mydata$free_throws + mydata$free_throw_percentage + mydata$offensive_rebounds + mydata$total_rebounds + mydata$assists + mydata$steals + mydata$blocks + mydata$turnovers + mydata$personal_fouls + mydata$points)
+```
+
+```{r}
+summary(modelTen)
+```
+
+\<!-remove steals-\>
+
+```{r}
+modelEleven <- lm(mydata$rank ~ mydata$games + mydata$wins + mydata$conference_wins + mydata$conference_losses + mydata$home_wins + mydata$away_wins + mydata$away_losses + mydata$defensive_rating + mydata$net_rating + mydata$field_goals + mydata$field_goal_percentage + mydata$X3_pointer_attempts + mydata$X3_pointer_percentage + mydata$free_throws + mydata$free_throw_percentage + mydata$offensive_rebounds + mydata$total_rebounds + mydata$assists + mydata$blocks + mydata$turnovers + mydata$personal_fouls + mydata$points)
+```
+
+```{r}
+summary(modelEleven)
+```
+
+\<!-remove wins-\>
+
+```{r}
+modelTwelve <- lm(mydata$rank ~ mydata$games + mydata$conference_wins + mydata$conference_losses + mydata$home_wins + mydata$away_wins + mydata$away_losses + mydata$defensive_rating + mydata$net_rating + mydata$field_goals + mydata$field_goal_percentage + mydata$X3_pointer_attempts + mydata$X3_pointer_percentage + mydata$free_throws + mydata$free_throw_percentage + mydata$offensive_rebounds + mydata$total_rebounds + mydata$assists + mydata$blocks + mydata$turnovers + mydata$personal_fouls + mydata$points)
+```
+
+```{r}
+summary(modelTwelve)
+```
+
+\<!-remove games-\>
+
+```{r}
+modelThirteen <- lm(mydata$rank ~ mydata$conference_wins + mydata$conference_losses + mydata$home_wins + mydata$away_wins + mydata$away_losses + mydata$defensive_rating + mydata$net_rating + mydata$field_goals + mydata$field_goal_percentage + mydata$X3_pointer_attempts + mydata$X3_pointer_percentage + mydata$free_throws + mydata$free_throw_percentage + mydata$offensive_rebounds + mydata$total_rebounds + mydata$assists + mydata$blocks + mydata$turnovers + mydata$personal_fouls + mydata$points)
+```
+
+```{r}
+summary(modelThirteen)
+```
+
+\<!-remove conference losses-\>
+
+```{r}
+modelFourteen <- lm(mydata$rank ~ mydata$conference_wins + mydata$home_wins + mydata$away_wins + mydata$away_losses + mydata$defensive_rating + mydata$net_rating + mydata$field_goals + mydata$field_goal_percentage + mydata$X3_pointer_attempts + mydata$X3_pointer_percentage + mydata$free_throws + mydata$free_throw_percentage + mydata$offensive_rebounds + mydata$total_rebounds + mydata$assists + mydata$blocks + mydata$turnovers + mydata$personal_fouls + mydata$points)
+```
+
+```{r}
+summary(modelFourteen)
+```
+
+\<!-remove home wins-\>
+
+```{r}
+modelFifteen <- lm(mydata$rank ~ mydata$conference_wins + mydata$away_wins + mydata$away_losses + mydata$defensive_rating + mydata$net_rating + mydata$field_goals + mydata$field_goal_percentage + mydata$X3_pointer_attempts + mydata$X3_pointer_percentage + mydata$free_throws + mydata$free_throw_percentage + mydata$offensive_rebounds + mydata$total_rebounds + mydata$assists + mydata$blocks + mydata$turnovers + mydata$personal_fouls + mydata$points)
+```
+
+```{r}
+summary(modelFifteen)
+```
+
+\<!-remove assists-\>
+
+```{r}
+modelSixteen <- lm(mydata$rank ~ mydata$conference_wins + mydata$away_wins + mydata$away_losses + mydata$defensive_rating + mydata$net_rating + mydata$field_goals + mydata$field_goal_percentage + mydata$X3_pointer_attempts + mydata$X3_pointer_percentage + mydata$free_throws + mydata$free_throw_percentage + mydata$offensive_rebounds + mydata$total_rebounds + mydata$blocks + mydata$turnovers + mydata$personal_fouls + mydata$points)
+```
+
+```{r}
+summary(modelSixteen)
+```
+
+\<!-remove defensive rating-\>
+
+```{r}
+modelSeventeen <- lm(mydata$rank ~ mydata$conference_wins + mydata$away_wins + mydata$away_losses + mydata$net_rating + mydata$field_goals + mydata$field_goal_percentage + mydata$X3_pointer_attempts + mydata$X3_pointer_percentage + mydata$free_throws + mydata$free_throw_percentage + mydata$offensive_rebounds + mydata$total_rebounds + mydata$blocks + mydata$turnovers + mydata$personal_fouls + mydata$points)
+```
+
+```{r}
+summary(modelSeventeen)
+```
+
+\<!-remove net rating-\>
+
+```{r}
+modelEighteen <- lm(mydata$rank ~ mydata$conference_wins + mydata$away_wins + mydata$away_losses + mydata$field_goals + mydata$field_goal_percentage + mydata$X3_pointer_attempts + mydata$X3_pointer_percentage + mydata$free_throws + mydata$free_throw_percentage + mydata$offensive_rebounds + mydata$total_rebounds + mydata$blocks + mydata$turnovers + mydata$personal_fouls + mydata$points)
+```
+
+```{r}
+summary(modelEighteen)
+```
+
+\<!-remove free throw percentage-\>
+
+```{r}
+modelNineteen <- lm(mydata$rank ~ mydata$conference_wins + mydata$away_wins + mydata$away_losses + mydata$field_goals + mydata$field_goal_percentage + mydata$X3_pointer_attempts + mydata$X3_pointer_percentage + mydata$free_throws + mydata$offensive_rebounds + mydata$total_rebounds + mydata$blocks + mydata$turnovers + mydata$personal_fouls + mydata$points)
+```
+
+```{r}
+summary(modelNineteen)
+```
+
+\<!-remove turnovers-\>
+
+```{r}
+modelTwenty <- lm(mydata$rank ~ mydata$conference_wins + mydata$away_wins + mydata$away_losses + mydata$field_goals + mydata$field_goal_percentage + mydata$X3_pointer_attempts + mydata$X3_pointer_percentage + mydata$free_throws + mydata$offensive_rebounds + mydata$total_rebounds + mydata$blocks + mydata$personal_fouls + mydata$points)
+```
+
+```{r}
+summary(modelTwenty)
+```
+
+\<!-remove blocks-\>
+
+```{r}
+modelTwentyOne <- lm(mydata$rank ~ mydata$conference_wins + mydata$away_wins + mydata$away_losses + mydata$field_goals + mydata$field_goal_percentage + mydata$X3_pointer_attempts + mydata$X3_pointer_percentage + mydata$free_throws + mydata$offensive_rebounds + mydata$total_rebounds + mydata$personal_fouls + mydata$points)
+```
+
+```{r}
+summary(modelTwentyOne)
+```
+
+\<!-remove field goal percentage-\>
+
+```{r}
+modelTwentyTwo <- lm(mydata$rank ~ mydata$conference_wins + mydata$away_wins + mydata$away_losses + mydata$field_goals + mydata$X3_pointer_attempts + mydata$X3_pointer_percentage + mydata$free_throws + mydata$offensive_rebounds + mydata$total_rebounds + mydata$personal_fouls + mydata$points)
+```
+
+```{r}
+summary(modelTwentyTwo)
+```
+
+\<!-remove away wins-\>
+
+```{r}
+modelTwentyThree <- lm(mydata$rank ~ mydata$conference_wins + mydata$away_losses + mydata$field_goals + mydata$X3_pointer_attempts + mydata$X3_pointer_percentage + mydata$free_throws + mydata$offensive_rebounds + mydata$total_rebounds + mydata$personal_fouls + mydata$points)
+```
+
+```{r}
+summary(modelTwentyThree)
+```
+
+\<!-remove freeThrows-\>
+
+```{r}
+modelTwentyFour <- lm(mydata$rank ~ mydata$conference_wins + mydata$away_losses + mydata$field_goals + mydata$X3_pointer_attempts + mydata$X3_pointer_percentage + mydata$offensive_rebounds + mydata$total_rebounds + mydata$personal_fouls + mydata$points)
+```
+
+```{r}
+summary(modelTwentyFour)
+```
+
+\<!-remove 3 pointer attempts-\>
+
+```{r}
+modelTwentyFive <- lm(mydata$rank ~ mydata$conference_wins + mydata$away_losses + mydata$field_goals + mydata$X3_pointer_percentage + mydata$offensive_rebounds + mydata$total_rebounds + mydata$personal_fouls + mydata$points)
+```
+
+```{r}
+summary(modelTwentyFive)
+```
+
+\<!-remove 3 pointer percentage-\>
+
+```{r}
+modelTwentySix <- lm(mydata$rank ~ mydata$conference_wins + mydata$away_losses + mydata$field_goals + mydata$offensive_rebounds + mydata$total_rebounds + mydata$personal_fouls + mydata$points)
+```
+
+```{r}
+summary(modelTwentySix)
+```
+
+\<!-remove points-\>
+
+```{r}
+modelTwentySeven <- lm(mydata$rank ~ mydata$conference_wins + mydata$away_losses + mydata$field_goals + mydata$offensive_rebounds + mydata$total_rebounds + mydata$personal_fouls)
+```
+
+```{r}
+summary(modelTwentySeven)
+```
+
+\<!-remove field goals-\>
+
+```{r}
+rankReg <- lm(mydata$rank ~ mydata$conference_wins + mydata$away_losses + mydata$offensive_rebounds + mydata$total_rebounds + mydata$personal_fouls)
+summary(rankReg)
+```
