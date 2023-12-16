@@ -1,0 +1,390 @@
+---
+title: "PresSlideShow"
+output: ioslides_presentation
+date: "2023-07-31"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(dplyr)
+library(zipcodeR)
+library(ggplot2)
+```
+
+```{r}
+snap_master %>% 
+  filter(`COLLEGE CODE` == "SS") %>% 
+  aggregate(ret_fall ~ `MAJOR CODE 1`,data = .,mean) %>%
+  ggplot(aes(x=`MAJOR CODE 1`,y=ret_fall, group= `MAJOR CODE 1`))+
+  geom_col()+
+  labs(title = "Rentention by Major in SS",
+       x = "Major",
+       y = "Rentention Rate")+
+  theme_light()
+```
+
+
+```{r}
+snap_master %>% 
+  ggplot(aes(`REPORT ETHNICITY`))+
+  geom_bar(aes(y = ..prop..,group = 1))+
+  labs(title= "Ethnicity of XU Students",
+       x= "Ethnicity",
+       y= "Proportion of Students")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+---
+```{r}
+snap_master %>% 
+aggregate(ret_fall ~ `COMMUTER DORM`+`COHORT TERM`+`REPORT ETHNICITY`,data = .,mean) %>%
+ggplot(aes(x=`COHORT TERM`,y=ret_fall,color=`COMMUTER DORM`, group=`COMMUTER DORM`))+
+geom_point()+
+geom_line()+
+facet_wrap(~`REPORT ETHNICITY`) +
+ylab("Retention to Fall")+
+xlab("Cohort Term")+
+theme_bw()
+```
+---
+
+```{r}
+snap_master %>% 
+  filter(RELIGION %in% c("Roman Catholic", "Refused", "Other Christian", "No religion", "Baptist")) %>% 
+  aggregate(ret_fall ~ RELIGION+`COHORT TERM`,data = .,mean) %>%
+  ggplot(aes(x=`COHORT TERM`,y=ret_fall,color=RELIGION, group=RELIGION))+
+  geom_point()+
+  geom_line()+
+  ylab("Retention to Fall")+
+  xlab("Cohort Term")+
+  theme_bw()
+```
+---
+```{r}
+snap_master %>% 
+  filter(RELIGION %in% c("Roman Catholic", "Refused", "Other Christian", "No religion", "Baptist")) %>% 
+  aggregate(ret_spring ~ RELIGION+`COHORT TERM`,data = .,mean) %>%
+  ggplot(aes(x=`COHORT TERM`,y=ret_spring,color=RELIGION, group=RELIGION))+
+  geom_point()+
+  geom_line()+
+  ylab("Retention to Spring")+
+  xlab("Cohort Term")+
+  theme_bw()
+```
+
+---
+```{r}
+snap_master %>% 
+  filter(`HOME STATE` %in% c("OH", "KY", "IN", "IL", "MI", "NY" )) %>% 
+aggregate(ret_fall ~ `HOME STATE`+`COHORT TERM`,data = .,mean) %>%
+ggplot(aes(x=`COHORT TERM`,y=ret_fall,color=`HOME STATE`, group=`HOME STATE`))+
+geom_point()+
+  geom_line()+
+ylab("Retention to Fall")+
+xlab("Cohort Term")+
+theme_bw()
+```
+---
+```{R}
+snap_master %>% 
+  filter(`HOME STATE` %in% c("OH", "KY", "IN", "IL", "MI", "NY" )) %>% 
+aggregate(ret_spring ~ `HOME STATE`+`COHORT TERM`,data = .,mean) %>%
+ggplot(aes(x=`COHORT TERM`,y=ret_spring,color=`HOME STATE`, group=`HOME STATE`))+
+geom_point()+
+  geom_line()+
+ylab("Retention to Spring")+
+xlab("Cohort Term")+
+theme_bw()
+
+```
+---
+
+
+```{r}
+snap_master %>% 
+  ggplot(aes(x=`HS GPA`,color= ret_fall, group= ret_fall))+
+  geom_histogram ()+
+  ylab("Retention to Fall")+
+  xlab("Cohort Term")+
+  theme_bw()
+```
+---
+
+
+GPA Histograms
+```{r}
+snap_master %>%
+  ggplot(aes(GPA.y, fill = ret_fall))+
+  geom_histogram(aes(), alpha = 0.5, position = "identity") +
+  labs(title = "Xavier Students GPA",
+       x = "GPA",
+       y = "Count")+
+  scale_fill_manual(values = c("black", "pink"))+
+  scale_color_manual(values = c("black","pink"))
+```
+--- 
+```{r}
+snap_master %>%
+  ggplot(aes(`HS GPA`, fill = ret_fall))+
+  geom_histogram(aes(), alpha = 0.5, position = "identity") +
+  labs(title = "Xavier Students High School GPA",
+       x = "GPA",
+       y = "Count")+
+  scale_fill_manual(values = c("black","pink"))+
+  scale_color_manual(values = c("black","pink"))
+```
+---
+Zip code distance
+```{r}
+snap_master <- snap_master %>%
+mutate(recoded_zip_code = substr(`HOME ZIP`, 1, 5))
+snap_master <- snap_master %>%
+  mutate(Distance = zip_distance(45207, `recoded_zip_code`)$distance)
+snap_master %>% 
+  ggplot(aes(Distance, GPA.y, color = ret_fall))+
+  geom_point()+
+  geom_smooth()
+```
+---
+Zip code distance
+
+```{r}
+snap_master %>% 
+  ggplot(aes(log(Distance), `INST AID AMT`, color = ret_fall))+
+  geom_point()+
+  geom_smooth()
+```
+
+---
+Black/White/Commuter/Resident
+```{r}
+
+white_resident_ret <- snap_master %>%
+  filter(`REPORT ETHNICITY` == "White", `COMMUTER DORM` == "R")
+
+black_commuter_ret <- snap_master %>%
+  filter(`REPORT ETHNICITY` == "Black or African-American", `COMMUTER DORM` == "C")
+
+black_resident_ret <- snap_master %>%
+  filter(`REPORT ETHNICITY` == "Black or African-American", `COMMUTER DORM` == "R")
+
+white_commuter_ret <- snap_master %>%
+  filter(`REPORT ETHNICITY` == "White", `COMMUTER DORM` == "C")
+
+white_resident_prop <- white_resident_ret %>%
+  summarise(Yes = mean(ret_fall == TRUE))
+
+black_commuter_prop <- black_commuter_ret %>%
+  summarise(Yes = mean(ret_fall == TRUE))
+
+black_resident_prop <- black_resident_ret %>%
+  summarise(Yes = mean(ret_fall == TRUE))
+
+white_commuter_prop <- white_commuter_ret %>%
+  summarise(Yes = mean(ret_fall == TRUE))
+
+retention_data <- data.frame(
+  Group = c("White Resident", "Black Commuter", "Black Resident", "White Commuter"),
+  Retained = c(white_resident_prop$Yes, black_commuter_prop$Yes, black_resident_prop$Yes, white_commuter_prop$Yes)
+)
+
+ggplot(retention_data, aes(x = Group)) +
+  geom_bar(aes(y = Retained), stat = "identity", fill = "blue", width = 0.4) +
+  labs(title = "Retention Rates by Student Type",
+       x = "Student Type",
+       y = "Proportion of Students Retained",
+       fill = "Retention Status") +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +  # Format y-axis as percentage
+  theme_minimal()
+```
+---
+```{r}
+library(dplyr)
+library(ggplot2)
+
+
+# Black/White/Commuter/Resident/GPA>3/GPA<3
+white_resident_gpa_gt3 <- snap_master %>%
+  filter(`REPORT ETHNICITY` == "White", `COMMUTER DORM` == "R", `HS GPA` > 3)
+
+white_resident_gpa_lt3 <- snap_master %>%
+  filter(`REPORT ETHNICITY` == "White", `COMMUTER DORM` == "R", `HS GPA` < 3)
+
+white_commuter_gpa_gt3 <- snap_master %>%
+  filter(`REPORT ETHNICITY` == "White", `COMMUTER DORM` == "C", `HS GPA` > 3)
+
+white_commuter_gpa_lt3 <- snap_master %>%
+  filter(`REPORT ETHNICITY` == "White", `COMMUTER DORM` == "C", `HS GPA` < 3)
+
+black_resident_gpa_gt3 <- snap_master %>%
+  filter(`REPORT ETHNICITY` == "Black or African-American", `COMMUTER DORM` == "R", `HS GPA` > 3)
+
+black_resident_gpa_lt3 <- snap_master %>%
+  filter(`REPORT ETHNICITY` == "Black or African-American", `COMMUTER DORM` == "R", `HS GPA` < 3)
+
+black_commuter_gpa_gt3 <- snap_master %>%
+  filter(`REPORT ETHNICITY` == "Black or African-American", `COMMUTER DORM` == "C", `HS GPA` > 3)
+
+black_commuter_gpa_lt3 <- snap_master %>%
+  filter(`REPORT ETHNICITY` == "Black or African-American", `COMMUTER DORM` == "C", `HS GPA` < 3)
+
+#
+white_resident_gt3_prop <- white_resident_gpa_gt3 %>%
+  summarise(Yes = mean(ret_fall == TRUE))
+
+white_resident_lt3_prop <- white_resident_gpa_lt3 %>%
+  summarise(Yes = mean(ret_fall == TRUE))
+
+white_commuter_gt3_prop <- white_commuter_gpa_gt3 %>%
+  summarise(Yes = mean(ret_fall == TRUE))
+
+white_commuter_lt3_prop <- white_commuter_gpa_lt3 %>%
+  summarise(Yes = mean(ret_fall == TRUE))
+
+black_resident_gt3_prop <- black_resident_gpa_gt3 %>%
+  summarise(Yes = mean(ret_fall == TRUE))
+
+black_resident_lt3_prop <- black_resident_gpa_lt3 %>%
+  summarise(Yes = mean(ret_fall == TRUE))
+
+black_commuter_gt3_prop <- black_commuter_gpa_gt3 %>%
+  summarise(Yes = mean(ret_fall == TRUE))
+
+black_commuter_lt3_prop <- black_commuter_gpa_lt3 %>%
+  summarise(Yes = mean(ret_fall == TRUE))
+
+#
+retention_data <- data.frame(
+  Group = c("White Commuter GPA < 3", "Black Commuter GPA < 3",
+            "Black Resident GPA < 3", "Black Resident GPA > 3",
+            "White Resident GPA < 3", "Black Commuter GPA > 3",
+            "White Commuter GPA > 3", "White Resident GPA > 3"),
+  Retained = c(white_commuter_lt3_prop$Yes, black_commuter_lt3_prop$Yes,
+               black_resident_lt3_prop$Yes, black_resident_gt3_prop$Yes,
+               white_resident_lt3_prop$Yes, black_commuter_gt3_prop$Yes,
+               white_commuter_gt3_prop$Yes, white_resident_gt3_prop$Yes)
+)
+
+#
+retention_data$Group <- factor(retention_data$Group, levels = c(
+  "White Commuter GPA < 3", "Black Commuter GPA < 3",
+  "Black Resident GPA < 3", "Black Resident GPA > 3",
+  "White Resident GPA < 3", "Black Commuter GPA > 3",
+  "White Commuter GPA > 3", "White Resident GPA > 3"
+))
+
+ggplot(retention_data, aes(x = Group)) +
+  geom_bar(aes(y = Retained), stat = "identity", fill = "blue", width = 0.4) +
+  labs(title = "Retention Rates by Student Type and GPA",
+       x = "Student Type and GPA",
+       y = "Proportion of Students Retained",
+       fill = "Retention Status") +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +  # Format y-axis as percentage
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels to be vertical
+```
+***
+Commuter/Resident/GPA<3/GPA>3
+```{r}
+
+commuter_gt3 <- snap_master %>%
+  filter(`COMMUTER DORM` == "C", `HS GPA` > 3)
+
+commuter_lt3 <- snap_master %>%
+  filter(`COMMUTER DORM` == "C", `HS GPA` < 3)
+
+resident_gt3 <- snap_master %>%
+  filter(`COMMUTER DORM` == "R", `HS GPA` > 3)
+
+resident_lt3 <- snap_master %>%
+  filter(`COMMUTER DORM` == "R", `HS GPA` < 3)
+
+
+commuter_gt3_prop <- commuter_gt3 %>%
+  summarise(Yes = mean(ret_fall == TRUE))
+
+commuter_lt3_prop <- commuter_lt3 %>%
+  summarise(Yes = mean(ret_fall == TRUE))
+
+resident_gt3_prop <- resident_gt3 %>%
+  summarise(Yes = mean(ret_fall == TRUE))
+
+resident_lt3_prop <- resident_lt3 %>%
+  summarise(Yes = mean(ret_fall == TRUE))
+
+
+retention_data <- data.frame(
+  Group = c("Commuter GPA > 3", "Commuter GPA < 3",
+            "Resident GPA > 3", "Resident GPA < 3"),
+  Retained = c(commuter_gt3_prop$Yes, commuter_lt3_prop$Yes,
+               resident_gt3_prop$Yes, resident_lt3_prop$Yes)
+)
+
+
+retention_data$Group <- factor(retention_data$Group, levels = c(
+  "Commuter GPA > 3", "Commuter GPA < 3",
+  "Resident GPA > 3", "Resident GPA < 3"
+))
+
+ggplot(retention_data, aes(x = Group)) +
+  geom_bar(aes(y = Retained), stat = "identity", fill = "blue", width = 0.4) +
+  labs(title = "Retention Rates by Student Type and GPA",
+       x = "Student Type and GPA",
+       y = "Proportion of Students Retained",
+       fill = "Retention Status") +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +  # Format y-axis as percentage
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels to be vertical
+```
+---
+Black/White/GPA>3/GPA<3
+```{r}
+
+# 
+race_gt3 <- snap_master %>%
+  filter(`GPA.y` > 3)
+
+race_lt3 <- snap_master %>%
+  filter(`GPA.y` < 3)
+
+#
+white_gt3_prop <- race_gt3 %>%
+  filter(`REPORT ETHNICITY` == "White") %>%
+  summarise(Yes = mean(ret_fall == TRUE))
+
+white_lt3_prop <- race_lt3 %>%
+  filter(`REPORT ETHNICITY` == "White") %>%
+  summarise(Yes = mean(ret_fall == TRUE))
+
+black_gt3_prop <- race_gt3 %>%
+  filter(`REPORT ETHNICITY` == "Black or African-American") %>%
+  summarise(Yes = mean(ret_fall == TRUE))
+
+black_lt3_prop <- race_lt3 %>%
+  filter(`REPORT ETHNICITY` == "Black or African-American") %>%
+  summarise(Yes = mean(ret_fall == TRUE))
+
+#
+retention_data <- data.frame(
+  Group = c("White GPA > 3", "White GPA < 3",
+            "Black GPA > 3", "Black GPA < 3"),
+  Retained = c(white_gt3_prop$Yes, white_lt3_prop$Yes,
+               black_gt3_prop$Yes, black_lt3_prop$Yes)
+)
+
+#
+retention_data$Group <- factor(retention_data$Group, levels = c(
+  "White GPA > 3", "White GPA < 3",
+  "Black GPA > 3", "Black GPA < 3"
+))
+
+ggplot(retention_data, aes(x = Group)) +
+  geom_bar(aes(y = Retained), stat = "identity", fill = "blue", width = 0.4) +
+  labs(title = "Retention Rates by Race and GPA",
+       x = "Race and GPA",
+       y = "Proportion of Students Retained",
+       fill = "Retention Status") +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +  # Format y-axis as percentage
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels to be vertical
+```
