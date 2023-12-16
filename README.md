@@ -8,7 +8,7 @@ This repository includes the projects I have completed as a data science student
 * Big East Regression
 > * Regression model that shows which basketball stats are most important to determining team rank
 > * [Methodology](https://github.com/oliviadelffs/DS/blob/main/Big%20East%20Regression%20Paper.pdf)
-> * [R Markdown Document featuring analysis](https://github.com/oliviadelffs/DS/blob/main/Big%20East%20Regression%20Paper.pdf)
+> * [R Markdown Document featuring analysis](https://github.com/oliviadelffs/DS/blob/main/Big%20East%20Regression.Rmd)
 * Kylie Cosmetics Lip Products
 > * Web scraping Ulta's website to gauge how popular Kylie Cosmetics is
 > * [Quarto Document featuring analysis](https://github.com/oliviadelffs/DS/blob/main/Kylie%20Cosmetics.qmd)
