@@ -1,0 +1,88 @@
+---
+title: "Assignment 6"
+format: html
+editor: visual
+---
+
+### Introduction
+
+While the Kardashian family is often credited with influencing mainstream culture trends, I've never found myself inspired to emulate their choices. I asked my friends if they've ever felt influenced by them, they said no, but if anything King Kylie, which refers to the era of Kylie Jenner's ombre blue lob and the debut of her new lip filler. Every girl wanted to be her, which made it the perfect time for her to drop a makeup brand specializing in lip products. So my question is: does King Kylie still hold major influence?
+
+To answer this question, we will look at the first page of the best selling lip products on the Ulta website.
+
+```{r}
+#| include: false
+#| warning: false
+
+library(readr)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+ultaDf <- read_csv("https://myxavier-my.sharepoint.com/:x:/g/personal/delffso_xavier_edu/EeMt5NlOTddNnK80oGsN8bgBUT2x1tsbBsOxt8i4ru01gw?download=1")
+
+```
+
+To see where Kylie ranks in terms of number of products featured, we can look at this table to see how much each brand occurs in the list.
+
+```{r}
+#| echo: false
+sort(table(ultaDf$brand_name), decreasing = TRUE)
+
+```
+
+Kylie Cosmetics ranks 12th for number of products on the best selling page out of 38 brands.
+
+```{r}
+#| echo: false
+#| include: false
+# Make rating numeric
+for (i in 1:length(ultaDf$product_rating)) {
+  string <- ""
+  for (p in 1:nchar(ultaDf$product_rating[i])) {
+    char <- substr(ultaDf$product_rating[i], p, p)
+    if (char != " ") {
+      string <- paste0(string, char)
+    } else {
+      break
+    }
+  }
+  ultaDf$product_rating[i] <- as.numeric(string)
+}
+```
+
+### How do Kylie's reviews compare to other celebrity brand, Fenty Beauty by Rihanna, that is also in the top 12?
+
+```{r}
+#| echo: false
+ultaDf %>% 
+filter(brand_name == "FENTY BEAUTY by Rihanna" | brand_name == "KYLIE COSMETICS") %>% 
+ggplot(aes(x = brand_name, y = product_rating, group = brand_name, fill = brand_name)) +
+  geom_bar(stat = "summary", fun = "mean", position = "dodge") +
+  labs(title = "Mean Product Ratings by Brand",
+       x = "Brand",
+       y = "Mean Product Rating")
+```
+
+Because Kylie's ratings are lower, that would support the claim that she is still influential. If Kylie's products are still in the best sellers but not performing as highly, that could mean that a factor of why people are buying the products is that they are buying Kylie.
+
+### How do Kylie's reviews compare to other top 12 brands?
+
+```{r}
+#| echo: false
+top_brands <- names(sort(table(ultaDf$brand_name), decreasing = TRUE))[1:12]
+
+
+ultaDf %>%
+  filter(brand_name %in% top_brands) %>%
+  mutate(brand_name = factor(brand_name, levels = top_brands)) %>%
+ggplot(aes(x = brand_name, y = product_rating, group = brand_name, fill = brand_name)) +
+  geom_bar(stat = "summary", fun = "mean", position = "dodge") +
+  labs(title = "Mean Product Ratings by Brand",
+       x = "Brand",
+       y = "Mean Product Rating" ) +  theme(axis.text.x = element_text(angle = 65, hjust = 1), plot.title = element_text(margin = margin(b = 45)))
+
+
+
+```
+
+Kylie Cosmetics has an average rating lower than all of the other brands within the top 12, strengthening the claim that King Kylie is still influential. This also speaks to my personal experience. I own products from all but 2 of these brands, I've bought them because of their quality, except I bought Kylie's products because I loved her during her King Kylie era.
