@@ -15,18 +15,7 @@ library(httr)
 library(jsonlite)
 ```
 
-```{r}
-#| echo: false
-response <- POST("https://www.reddit.com/api/v1/access_token",
-                 authenticate('2Q4UFh_l9-VC1ZJCzL4JBg', 'mp4G5jy7N7nLsMbY7NczMdsmRgWH5g'),
-                 user_agent("Assignment 7"),
-                 body = list(grant_type="password", 
-                             username="123olivia1", 
-                             password="01olivia"))
-access_token_json <- rawToChar(response$content)
-access_token_content <- fromJSON(access_token_json)
-access_token <- access_token_content$access_token
-```
+
 
 ```{r}
 response <- POST("https://www.reddit.com/api/v1/access_token",
