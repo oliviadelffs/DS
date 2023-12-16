@@ -13,6 +13,7 @@ This repository includes the projects I have completed as a data science student
 > * Web scraping Ulta's website to gauge how popular Kylie Cosmetics is
 > * [Quarto Document featuring analysis](https://github.com/oliviadelffs/DS/blob/main/Kylie%20Cosmetics.qmd)
 > * [HTML Document featuring analysis](https://rpubs.com/delffso/1126846)
+> * [R Script featuring web-scraping process](https://github.com/oliviadelffs/DS/blob/main/Kylie%20Cosmetics%20Scraping.R)
 * Kardashians vs Influencers
 > * Analyzes Instagram's top 200 most followed accounts to compare the Kardashian family to other influencers
 > * Performs sentiment analysis on various subreddits to explore how Kardashians are discussed compared to other influencers
