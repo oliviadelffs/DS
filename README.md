@@ -11,7 +11,7 @@ This repository includes the projects I have completed as a data science student
 > * Code found in "Big East Regression.Rmd"
 * Kylie Cosmetics Lip Products
 > * Web scraping Ulta's website to gauge how popular Kylie Cosmetics is
-> * Scraping process found in "Kylie Cosmetics Scraping.R"
+> * [Quarto Document featuring analysis](https://github.com/oliviadelffs/DS/blob/main/Kylie%20Cosmetics.qmd)
 > * [HTML Document featuring analysis](https://rpubs.com/delffso/1126846)
 * Kardashians vs Influencers
 > * Analyzes Instagram's top 200 most followed accounts to compare the Kardashian family to other influencers
