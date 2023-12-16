@@ -1,0 +1,164 @@
+---
+title: "Assignment 7"
+format: html
+editor: visual
+---
+
+```{r}
+#| echo: false
+library(tidyverse)
+library(tidytext)
+library(gutenbergr)
+library(ggwordcloud)
+library(textdata)
+library(httr)
+library(jsonlite)
+```
+
+```{r}
+#| echo: false
+response <- POST("https://www.reddit.com/api/v1/access_token",
+                 authenticate('2Q4UFh_l9-VC1ZJCzL4JBg', 'mp4G5jy7N7nLsMbY7NczMdsmRgWH5g'),
+                 user_agent("Assignment 7"),
+                 body = list(grant_type="password", 
+                             username="123olivia1", 
+                             password="01olivia"))
+access_token_json <- rawToChar(response$content)
+access_token_content <- fromJSON(access_token_json)
+access_token <- access_token_content$access_token
+```
+
+```{r}
+response <- POST("https://www.reddit.com/api/v1/access_token",
+                 authenticate('CLIENT_ID', 'CLIENT_SECRET'),
+                 user_agent("APP_NAME"),
+                 body = list(grant_type="password", 
+                             username="REDDIT_USERNAME", 
+                             password="REDDIT_PASSWORD"))
+access_token_json <- rawToChar(response$content)
+access_token_content <- fromJSON(access_token_json)
+access_token <- access_token_content$access_token
+access_token
+```
+
+```{r}
+# Kylie Subreddit
+subreddit <- "KylieJenner" 
+url <- sprintf("https://oauth.reddit.com/r/%s/new.json", subreddit)
+authorization_bearer <- paste("Bearer ", access_token, sep="")
+result <- GET(
+  url,
+  user_agent("Assignment 7"),
+  add_headers(Authorization = authorization_bearer)
+)
+
+```
+
+```{r}
+reddit_data <- fromJSON(content(result, "text"))
+titlesrKylieJenner <- reddit_data$data$children$data$title
+```
+
+```{r}
+subreddit <- "KylieJennerPics" 
+url <- sprintf("https://oauth.reddit.com/r/%s/new.json", subreddit)
+authorization_bearer <- paste("Bearer ", access_token, sep="")
+resul2t <- GET(
+  url,
+  user_agent("Assignment 7"),
+  add_headers(Authorization = authorization_bearer)
+)
+reddit_data2 <- fromJSON(content(resul2t, "text"))
+titlesrKylieJennerPics <- reddit_data2$data$children$data$title
+```
+
+```{r}
+subreddit <- "kardashians" 
+url <- sprintf("https://oauth.reddit.com/r/%s/new.json", subreddit)
+authorization_bearer <- paste("Bearer ", access_token, sep="")
+rezult <- GET(
+  url,
+  user_agent("Assignment 7"),
+  add_headers(Authorization = authorization_bearer)
+)
+reddit3 <- fromJSON(content(rezult, "text"))
+titlesrKardashians <- reddit3$data$children$data$title
+```
+
+```{r}
+subreddit <- "KUWTKsnark" 
+url <- sprintf("https://oauth.reddit.com/r/%s/new.json", subreddit)
+authorization_bearer <- paste("Bearer ", access_token, sep="")
+result4 <- GET(
+  url,
+  user_agent("Assignment 7"),
+  add_headers(Authorization = authorization_bearer)
+)
+reddit4 <- fromJSON(content(result4, "text"))
+titlesrKUWTKsnark <- reddit4$data$children$data$title
+```
+
+```{r}
+kardash <- data.frame(Category = "Kardashian", Title = c(titlesrKardashians, titlesrKUWTKsnark, titlesrKylieJenner, titlesrKylieJennerPics))
+```
+
+```{r}
+subreddit <- "AlixearleSnark" 
+url <- sprintf("https://oauth.reddit.com/r/%s/new.json", subreddit)
+authorization_bearer <- paste("Bearer ", access_token, sep="")
+resulti1 <- GET(
+  url,
+  user_agent("Assignment 7"),
+  add_headers(Authorization = authorization_bearer)
+)
+redditi1 <- fromJSON(content(resulti1, "text"))
+titlesraesnark <- redditi1$data$children$data$title
+```
+
+```{r}
+subreddit <- "influencerSnark" 
+url <- sprintf("https://oauth.reddit.com/r/%s/new.json", subreddit)
+authorization_bearer <- paste("Bearer ", access_token, sep="")
+resulti2 <- GET(
+  url,
+  user_agent("Assignment 7"),
+  add_headers(Authorization = authorization_bearer)
+)
+redditi2 <- fromJSON(content(resulti2, "text"))
+titlesrinfsnark <- redditi2$data$children$data$title
+```
+
+```{r}
+subreddit <- "emmachamberlain" 
+url <- sprintf("https://oauth.reddit.com/r/%s/new.json", subreddit)
+authorization_bearer <- paste("Bearer ", access_token, sep="")
+resulti3 <- GET(
+  url,
+  user_agent("Assignment 7"),
+  add_headers(Authorization = authorization_bearer)
+)
+redditi3 <- fromJSON(content(resulti3, "text"))
+titlesemmachamb <- redditi3$data$children$data$title
+```
+
+```{r}
+subreddit <- "beautyguruchatter" 
+url <- sprintf("https://oauth.reddit.com/r/%s/new.json", subreddit)
+authorization_bearer <- paste("Bearer ", access_token, sep="")
+resulti4 <- GET(
+  url,
+  user_agent("Assignment 7"),
+  add_headers(Authorization = authorization_bearer)
+)
+redditi4 <- fromJSON(content(resulti4, "text"))
+titlesbeautygur <- redditi4$data$children$data$title
+```
+
+```{r}
+inf <- data.frame(Category = "Influencer", Title = c(titlesbeautygur, titlesemmachamb, titlesraesnark, titlesrinfsnark))
+```
+
+```{r}
+fullFrame <- rbind(inf,kardash)
+write.csv(fullFrame, file = "~/assignment7Df.csv", row.names = FALSE)
+```
