@@ -26,3 +26,6 @@ This repository includes the projects I have completed as a data science student
 > * [HTML Document featuring analysis](https://rpubs.com/delffso/wish-ratings)
 * Hill Ciphers
 > * Uses linear algebra to strengthen the encryption process of secret messages
+> * [Explanation of Hill Ciphers](https://rpubs.com/delffso/wish-ratings)
+> * [Methodology](https://rpubs.com/delffso/wish-ratings)
+> * [Quarto Document featuring analysis](https://rpubs.com/delffso/wish-ratings)
