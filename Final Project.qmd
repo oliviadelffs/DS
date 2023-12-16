@@ -1,0 +1,185 @@
+---
+title: "Final Project"
+author: "Olivia Delffs"
+format: html
+editor: visual
+---
+
+## Introduction
+
+In recent years, there has been a reduced gap in qualifications for what makes a classic celebrity rather than an internet celebrity, otherwise known as an influencer. In the early ages of the internet, when people were first able to make a livable career off of being an internet personality, it was seen as a somewhat laughable, and there was a clear distinction between them and a classic celebrity. But now, internet influencers are invited to exclusive events such as the Met Gala and are endorsed by luxury brands like Dior.
+
+Often regarded as the most influential celebrities in terms of fashion, beauty, and lifestyle, the Kardashians have been spotted hanging out with younger, internet influencers. The most well-known example is a friendship fling between Kourtney Kardashian and TikTok star Addison Rae, who is much younger and does not come from the same wealthy celebrity background. This has led many people to question the future of celebrity culture and nepotistic structures within the space.
+
+To look into this, we will look at a dataset that contains the top 200 most followed accounts on Instagram.
+
+```{r}
+#| echo: false
+#| warning: false
+library(readr) 
+library(tidyverse)
+library(lubridate)
+library(tidytext)
+library(textdata)
+library(dplyr)
+library(ggplot2)
+```
+
+```{r}
+#| warning: false
+instagram <- read_csv("https://myxavier-my.sharepoint.com/:x:/g/personal/delffso_xavier_edu/Ef1Uzp7QmmBGk5kARvffjqQBDvO5rWoPWQt45WBHAdJX1Q?download=1")
+```
+
+### What are the careers of the top followed? 
+
+```{r}
+#| echo: false
+instagram %>% ggplot(aes(x = career, fill = career)) + geom_bar() + labs(title = "Number of Instagram Accounts in Top 200 Followers by Career")
+```
+
+Despite influencers heavy use of social media, "Personality"s don't take up as much of the top following space as traditional celebrities do.
+
+```{r}
+#| echo: false
+kardashVec <- c("jenner", "kardashian", "kardash")
+instagram$Kardashian <- rowSums(sapply(kardashVec, function(keyword) grepl(keyword, instagram$channel_info, ignore.case = TRUE)))
+
+# If you want a binary indicator (1 for any match, 0 for no match)
+instagram$Kardashian <- as.integer(instagram$Kardashian > 0)
+
+instagram <- instagram %>%
+  mutate(followers = as.numeric(gsub("m", "", followers)))
+```
+
+### Which careers are the Kardashian's considered to be apart of?
+
+```{r}
+#| echo: false
+instagram %>% filter(Kardashian == 1) %>% ggplot(aes(x = career, fill = career)) + geom_bar() + labs(title = "Careers of Kardashian's within the Top 200 Instagram Followers")
+```
+
+All except 1 Kardashian in the top 200 is considered a personality, let's see how much of the personality category that they take up.
+
+```{r}
+#| echo: false
+#| warning: false
+instagram %>% 
+  filter(career == "Personality") %>% 
+  ggplot(aes(x = factor(Kardashian), fill = factor(Kardashian))) + 
+  geom_bar() +
+  scale_x_discrete(labels = c("0" = "No", "1" = "Yes")) +
+  labs(x = "Kardashian", fill = "Kardashian") + labs(title = "Number of Accounts within the Personality Category")
+```
+
+There are at least twice as many non-Kardashian influencers considered personalities, how much of the total amount of followers within the "Personality" category are those of the Kardashians?
+
+```{r}
+nonK <- instagram %>%
+  filter(career == "Personality") %>%
+  filter(Kardashian == 0) %>% 
+  summarise(Sum = sum(followers)) %>%
+  pull(Sum)
+K <- instagram %>%
+  filter(career == "Personality") %>%
+  filter(Kardashian == 1) %>% 
+  summarise(Sum = sum(followers)) %>%
+  pull(Sum)
+K / (K + nonK)
+```
+
+The total number of followers within the "Personality" category contributed by the Kardashians is about 67%, despite them only making up around 27% of accounts, showing that they still dominate the influencer space while also being traditional celebrities.
+
+The dataset used contains a variable called "influence_score" which takes into account popularity and engagement of users with the account.
+
+```{r}
+instagram %>% 
+  filter(career == "Personality") %>% 
+  ggplot(aes(x = factor(Kardashian), y = influence_score, fill = factor(Kardashian))) + 
+  geom_bar(stat = "summary", fun = "mean", position = "stack") +
+  scale_x_discrete(labels = c("0" = "No", "1" = "Yes")) +
+  labs(x = "Kardashian", y = "Mean Influence Score", fill = "Kardashian") +
+  theme_minimal() + labs(title = "Average Influence Score within the Personality Category")
+```
+
+This shows us that the Kardashian's are more popular and engaged with more than other influencers, but this does not mean that the Kardashian's are respected and talked about well by the general public.
+
+### How does public opinion of the Kardashian's compare to public opinion of influencers?
+
+To answer this question, we will look at post titles from various subreddits that discuss the Kardashians and compare the positivity of the words within these titles to those from subreddits discussing other influencers which are contained in fullFrame.
+
+```{r}
+#| warning: false
+fullFrame <- read_csv("https://myxavier-my.sharepoint.com/:x:/g/personal/delffso_xavier_edu/Edn6R7tWl8BErvaR0Tm8pGkB0db4Uc-nP3S85XO_gV0rbQ?download=1")
+```
+
+```{r}
+#| echo: false
+#| warning: false
+tidy_sub <- fullFrame %>%
+  unnest_tokens(word, Title) %>%
+  anti_join(stop_words)
+```
+
+There are many slang words or words that may have a different connotation on the internet than in the general lexicon, especially in spaces discussing celebrities. These spaces often use slang that is also popular in the realm of Rupaul's Drag Race, so we will use a data frame that contains words from a subreddit about Rupaul's Drag Race and their sentiment value.
+
+```{r}
+#| warning: false
+#| echo: false
+rupaulSent <- read_tsv("https://myxavier-my.sharepoint.com/:u:/g/personal/delffso_xavier_edu/ESfuy1M39AdPmF5ZyCNXkrgByiEJMhEBg5PVJR9Jq-pk1w?download=1", col_names = FALSE)
+colnames(rupaulSent) <- c("word", "mean", "StD")
+rupaulSent <- rupaulSent %>% select(word, mean)
+```
+
+```{r}
+#| warning: false
+#| echo: false
+common_words <- intersect(tidy_sub$word, rupaulSent$word)
+reddit_tidy <- tidy_sub %>% filter(word %in% common_words)
+rup_counts <- 
+  reddit_tidy %>% 
+  group_by(Category, word) %>% 
+  summarize(n = n()) %>% 
+  inner_join(rupaulSent)
+rup_counts <- rup_counts %>% mutate(sentiment = ifelse(mean < 0, "negative", "positive"))
+```
+
+```{r}
+#| echo: false
+namesVec <- c("kim", "kylie", "kardashian", "west", "parker", "bianca")
+rup_counts %>%
+  group_by(Category) %>%
+  filter(n > 1) %>%
+  filter(!word %in% namesVec) %>% 
+  mutate(n = ifelse(sentiment == "negative", -n, n)) %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(word, n, fill = sentiment)) +
+  geom_col(position = "stack", color = "white") +
+  coord_flip() +
+  facet_wrap(~Category, ncol = 2, scales = "free_y") +
+  geom_text(aes(label = signif(n, digits = 3)), nudge_y = 8, color = "black") +
+  scale_fill_manual(values = c("positive" = "lightblue", "negative" = "lightcoral")) +
+  labs(title = "Positive and Negative Words for Influencers and Kardashian")
+```
+From this graph it seems like both influencers and the Kardashians are talked about in the same light, but if anything, the Kardashians more positively.
+
+This only includes words that are used more than once, so we will calculate a numerical score including all words.
+
+```{r}
+influencerScore2 <- rup_counts %>%
+  filter(Category == "Influencer") %>%
+  filter(!word %in% namesVec) %>%
+  summarise(Score = sum(mean)) %>%
+  pull(Score)
+
+kardashianScore2 <- rup_counts %>%
+  filter(Category == "Kardashian") %>%
+  filter(!word %in% namesVec) %>%
+  summarise(Score = sum(mean)) %>%
+  pull(Score)
+```
+
+With this lexicon, the score for influencer is 6.58, which is positive in comparison to bing's score of -5. This also yields a higher Kardashian score, which is 33.56, a huge jump from bing's score of 5. Accounting for slang and internet language clearly makes a difference in the result.
+
+### Conclusion
+
+While internet influencers are making their way into traditional celebrity spaces, they still seem to be discussed as lesser than the famous and influential Kardashians and are not as prominent followers-wise.
