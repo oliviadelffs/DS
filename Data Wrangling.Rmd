@@ -1,0 +1,208 @@
+Import map,census data, and past election data
+```{r setup, message=FALSE,warning=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+library(tidyverse)
+library(sf)
+library(readxl)
+library(RColorBrewer)
+library(tidycensus)
+
+census_api_key("fa67b1dbacf4fbbb1b14c875f34437c6cbdaa694")
+dhc.vars <- load_variables(2020, "dhc", cache = TRUE)
+acs5.vars <- load_variables(2021, "acs5")
+subject <- load_variables(2021, "acs5/subject")
+
+map2021 <- st_zm(st_read("PRECINCT2021_0311.shp"))
+
+results2021 <- read_excel("G21_Official_Canvass.xlsx", 
+    sheet = "Cincinnati", skip = 2)
+
+
+mapANDresults2021 <-
+  left_join(map2021, results2021, by = c("NAME" = "PRECINCT"))
+
+```
+Get white population and housing information
+```{r}
+
+blockgroups.white <- get_acs(geography = "block group", 
+                             state = "Ohio",
+                             county = "Hamilton",
+                             variables = "B02001_002", 
+                             year = 2020,
+                             geometry = TRUE
+) %>% 
+  select(white.pop = estimate)
+
+
+blockgroups.total <- get_acs(geography = "block group", 
+                             state = "Ohio",
+                             county = "Hamilton",
+                             variables = "B02001_001", 
+                             year = 2020,
+                             geometry = TRUE
+) %>% 
+  select(total.pop = estimate)
+# SAME HOUSE 1 YEAR AGO  
+sameHouse.total <- get_acs(geography = "tract", 
+                             state = "Ohio",
+                             county = "Hamilton",
+                             variables = "B07003_004", 
+                             year = 2020,
+                             geometry = TRUE
+) %>% 
+  select(sameHouse = estimate)
+# MOVED WITHIN THE SAME COUNTY
+sameCounty.total <- get_acs(geography = "tract", 
+                             state = "Ohio",
+                             county = "Hamilton",
+                             variables = "B07003_007", 
+                             year = 2020,
+                             geometry = TRUE
+) %>% 
+  select(sameCounty = estimate)
+# MOVED FROM DIFFERENT COUNTY
+diffCounty.total <- get_acs(geography = "tract", 
+                             state = "Ohio",
+                             county = "Hamilton",
+                             variables = "B07003_010", 
+                             year = 2020,
+                             geometry = TRUE
+) %>% 
+  select(diffCounty = estimate)
+
+# MOVED FROM DIFFERENT STATE
+diffState.total <- get_acs(geography = "tract", 
+                             state = "Ohio",
+                             county = "Hamilton",
+                             variables = "B07003_013", 
+                             year = 2020,
+                             geometry = TRUE
+) %>% 
+  select(diffState = estimate)
+
+# MOVED FROM DIFFERENT COUNTRY
+diffCountry.total <- get_acs(geography = "tract", 
+                             state = "Ohio",
+                             county = "Hamilton",
+                             variables = "B07003_016", 
+                             year = 2020,
+                             geometry = TRUE
+) %>% 
+  select(diffCountry = estimate)
+block.total <- get_decennial(geography = "block", 
+                 state = "Ohio",
+                 county = "Hamilton",
+                 variables = "P1_001N", 
+                 year = 2020,
+                 sumfile = "dhc",
+                 geometry = TRUE) %>% 
+  select(total.pop = value)
+
+```
+
+Add new variables to data frame
+
+```{r}
+precincts.white <- interpolate_pw(
+  from = st_make_valid(blockgroups.white),
+  to = st_make_valid(mapANDresults2021),
+  to_id = "NAME",
+  extensive = TRUE,
+  weights = st_make_valid(block.total),
+  weight_column = "total.pop",
+  crs = "NAD83"
+) 
+
+precincts.total <- interpolate_pw(
+  from = st_make_valid(blockgroups.total),
+  to = st_make_valid(mapANDresults2021),
+  to_id = "NAME",
+  extensive = TRUE,
+  weights = st_make_valid(block.total),
+  weight_column = "total.pop",
+  crs = "NAD83"
+) 
+
+sameHouse.total <- interpolate_pw(
+  from = st_make_valid(sameHouse.total),
+  to = st_make_valid(mapANDresults2021),
+  to_id = "NAME",
+  extensive = TRUE,
+  weights = st_make_valid(block.total),
+  weight_column = "total.pop",
+  crs = "NAD83"
+) 
+sameCounty.total <- interpolate_pw(
+  from = st_make_valid(sameCounty.total),
+  to = st_make_valid(mapANDresults2021),
+  to_id = "NAME",
+  extensive = TRUE,
+  weights = st_make_valid(block.total),
+  weight_column = "total.pop",
+  crs = "NAD83"
+) 
+diffCounty.total <- interpolate_pw(
+  from = st_make_valid(diffCounty.total),
+  to = st_make_valid(mapANDresults2021),
+  to_id = "NAME",
+  extensive = TRUE,
+  weights = st_make_valid(block.total),
+  weight_column = "total.pop",
+  crs = "NAD83"
+) 
+diffState.total <- interpolate_pw(
+  from = st_make_valid(diffState.total),
+  to = st_make_valid(mapANDresults2021),
+  to_id = "NAME",
+  extensive = TRUE,
+  weights = st_make_valid(block.total),
+  weight_column = "total.pop",
+  crs = "NAD83"
+) 
+
+diffCountry.total <- interpolate_pw(
+  from = st_make_valid(diffCountry.total),
+  to = st_make_valid(mapANDresults2021),
+  to_id = "NAME",
+  extensive = TRUE,
+  weights = st_make_valid(block.total),
+  weight_column = "total.pop",
+  crs = "NAD83"
+) 
+combined <- 
+  left_join(mapANDresults2021, st_drop_geometry(sameHouse.total), 
+            by = c("NAME" = "NAME")) %>% 
+  left_join(., st_drop_geometry(sameCounty.total), 
+            by = c("NAME" = "NAME")) %>% 
+  left_join(., st_drop_geometry(diffCounty.total), 
+            by = c("NAME" = "NAME")) %>% 
+  left_join(., st_drop_geometry(diffState.total), 
+            by = c("NAME" = "NAME")) %>% 
+  left_join(., st_drop_geometry(diffCountry.total), 
+            by = c("NAME" = "NAME")) %>% 
+  left_join(., st_drop_geometry(precincts.total), 
+            by = c("NAME" = "NAME"))
+  
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
